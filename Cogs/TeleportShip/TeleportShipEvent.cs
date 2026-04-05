@@ -30,7 +30,7 @@ namespace LCChaosMod.Cogs
 
             var player = players[Random.Range(0, players.Count)];
             Plugin.Log.LogInfo($"[TeleportShipEvent] Teleporting {player.playerUsername} to ship.");
-            ChaosNetworkHandler.SendTeleport(player, shipPos, toShip: true);
+            TeleportNet.Send(player, shipPos, toShip: true);
         }
 
         private static Vector3 GetShipPosition()

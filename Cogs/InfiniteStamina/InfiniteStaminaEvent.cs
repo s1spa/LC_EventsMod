@@ -7,7 +7,7 @@ namespace LCChaosMod.Cogs
 
         public void Execute()
         {
-            ChaosNetworkHandler.BroadcastStamina(ChaosSettings.StaminaDuration.Value);
+            InfiniteStamina.Net.Broadcast(ChaosSettings.StaminaDuration.Value);
         }
     }
 }

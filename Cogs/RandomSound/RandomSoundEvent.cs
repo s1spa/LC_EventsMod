@@ -51,7 +51,7 @@ namespace LCChaosMod.Cogs
             Vector3 pos = target.transform.position + new Vector3(ox, 1f, oz);
 
             Plugin.Log.LogInfo($"[RandomSoundEvent] Playing '{clip.name}' near {target.playerUsername}.");
-            ChaosNetworkHandler.BroadcastSound(clip.name, pos);
+            RandomSound.Net.Broadcast(clip.name, pos);
         }
 
         private static List<PlayerControllerB> GetInsidePlayers()

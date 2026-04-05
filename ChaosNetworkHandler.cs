@@ -1,35 +1,30 @@
-using System.Collections;
-using GameNetcodeStuff;
 using Unity.Collections;
 using Unity.Netcode;
-using UnityEngine;
 
 namespace LCChaosMod
 {
     /// <summary>
-    /// Handles all cross-client communication via CustomMessagingManager.
-    /// Init() must be called on ALL players when a level loads.
+    /// Orchestrates network handler registration for all modules.
+    /// Only Warning stays here — it's used directly by EventManager, not tied to any single event.
     /// </summary>
     internal static class ChaosNetworkHandler
     {
-        private const string MsgWarning  = "LCChaosMod_Warning";
-        private const string MsgTeleport = "LCChaosMod_Teleport";
-        private const string MsgSound    = "LCChaosMod_Sound";
-        private const string MsgStamina  = "LCChaosMod_Stamina";
+        private const string MsgWarning = "LCChaosMod_Warning";
 
         public static void Init()
         {
             var mgr = NetworkManager.Singleton.CustomMessagingManager;
-            mgr.RegisterNamedMessageHandler(MsgWarning,  OnReceiveWarning);
-            mgr.RegisterNamedMessageHandler(MsgTeleport, OnReceiveTeleport);
-            mgr.RegisterNamedMessageHandler(MsgSound,    OnReceiveSound);
-            mgr.RegisterNamedMessageHandler(MsgStamina,  OnReceiveStamina);
-            Plugin.Log.LogInfo("[ChaosNetworkHandler] Handlers registered.");
+            mgr.RegisterNamedMessageHandler(MsgWarning, OnReceiveWarning);
+
+            Utils.TeleportNet.Init();
+            Cogs.RandomSound.Net.Init();
+            Cogs.InfiniteStamina.Net.Init();
+
+            Plugin.Log.LogInfo("[ChaosNetworkHandler] All handlers registered.");
         }
 
         // ── Warning ──────────────────────────────────────────────────────────
 
-        /// <summary>Host: show HUD locally and broadcast to all clients.</summary>
         public static void BroadcastWarning(string eventName)
         {
             ShowHUD(eventName);
@@ -45,7 +40,7 @@ namespace LCChaosMod
 
         private static void OnReceiveWarning(ulong _, FastBufferReader reader)
         {
-            if (NetworkManager.Singleton.IsServer) return; // host already handled locally
+            if (NetworkManager.Singleton.IsServer) return;
             reader.ReadValueSafe(out string eventName);
             ShowHUD(eventName);
         }
@@ -56,144 +51,6 @@ namespace LCChaosMod
             string title = ua ? "ХАОС" : "CHAOS";
             string msg   = ua ? $"{eventName} через 5 секунд!" : $"{eventName} in 5 seconds!";
             HUDManager.Instance?.DisplayTip(title, msg, isWarning: true);
-        }
-
-        // ── Teleport ─────────────────────────────────────────────────────────
-
-        /// <summary>
-        /// Host: teleport a specific player to dest.
-        /// If it's the host's own player — apply locally.
-        /// Otherwise — send message to that client.
-        /// toShip: also sets isInsideFactory=false, isInHangarShipRoom=true.
-        /// </summary>
-        public static void SendTeleport(PlayerControllerB player, Vector3 dest, bool toShip)
-        {
-            if (player.actualClientId == NetworkManager.Singleton.LocalClientId)
-            {
-                ApplyTeleport(player, dest, toShip);
-                return;
-            }
-
-            var writer = new FastBufferWriter(32, Allocator.Temp);
-            using (writer)
-            {
-                writer.WriteValueSafe(dest.x);
-                writer.WriteValueSafe(dest.y);
-                writer.WriteValueSafe(dest.z);
-                writer.WriteValueSafe(toShip);
-                NetworkManager.Singleton.CustomMessagingManager
-                    .SendNamedMessage(MsgTeleport, player.actualClientId, writer);
-            }
-        }
-
-        private static void OnReceiveTeleport(ulong _, FastBufferReader reader)
-        {
-            if (NetworkManager.Singleton.IsServer) return; // host already handled locally
-            reader.ReadValueSafe(out float x);
-            reader.ReadValueSafe(out float y);
-            reader.ReadValueSafe(out float z);
-            reader.ReadValueSafe(out bool toShip);
-
-            var local = GameNetworkManager.Instance?.localPlayerController;
-            if (local == null) return;
-            ApplyTeleport(local, new Vector3(x, y, z), toShip);
-        }
-
-        private static void ApplyTeleport(PlayerControllerB player, Vector3 dest, bool toShip)
-        {
-            if (toShip)
-            {
-                player.isInsideFactory    = false;
-                player.isInHangarShipRoom = true;
-            }
-            player.TeleportPlayer(dest);
-        }
-
-        // ── Sound ─────────────────────────────────────────────────────────────
-
-        /// <summary>Host: play sound locally and broadcast clip name + position to all clients.</summary>
-        public static void BroadcastSound(string clipName, Vector3 pos)
-        {
-            PlaySoundLocal(clipName, pos);
-
-            var writer = new FastBufferWriter(512, Allocator.Temp);
-            using (writer)
-            {
-                writer.WriteValueSafe(clipName);
-                writer.WriteValueSafe(pos.x);
-                writer.WriteValueSafe(pos.y);
-                writer.WriteValueSafe(pos.z);
-                NetworkManager.Singleton.CustomMessagingManager
-                    .SendNamedMessageToAll(MsgSound, writer);
-            }
-        }
-
-        private static void OnReceiveSound(ulong _, FastBufferReader reader)
-        {
-            if (NetworkManager.Singleton.IsServer) return; // host already handled locally
-            reader.ReadValueSafe(out string clipName);
-            reader.ReadValueSafe(out float x);
-            reader.ReadValueSafe(out float y);
-            reader.ReadValueSafe(out float z);
-            PlaySoundLocal(clipName, new Vector3(x, y, z));
-        }
-
-        private static void PlaySoundLocal(string clipName, Vector3 pos)
-        {
-            var enemies = RoundManager.Instance?.currentLevel?.Enemies;
-            if (enemies == null) return;
-            foreach (var entry in enemies)
-            {
-                var clips = entry?.enemyType?.audioClips;
-                if (clips == null) continue;
-                foreach (var c in clips)
-                {
-                    if (c != null && c.name == clipName)
-                    {
-                        AudioSource.PlayClipAtPoint(c, pos);
-                        return;
-                    }
-                }
-            }
-            Plugin.Log.LogWarning($"[ChaosNetworkHandler] Clip '{clipName}' not found locally.");
-        }
-
-        // ── Stamina ───────────────────────────────────────────────────────────
-
-        /// <summary>Host: apply infinite stamina locally and broadcast to all clients.</summary>
-        public static void BroadcastStamina(float duration)
-        {
-            GameNetworkManager.Instance.StartCoroutine(StaminaCoroutine(duration));
-
-            var writer = new FastBufferWriter(8, Allocator.Temp);
-            using (writer)
-            {
-                writer.WriteValueSafe(duration);
-                NetworkManager.Singleton.CustomMessagingManager
-                    .SendNamedMessageToAll(MsgStamina, writer);
-            }
-        }
-
-        private static void OnReceiveStamina(ulong _, FastBufferReader reader)
-        {
-            if (NetworkManager.Singleton.IsServer) return;
-            reader.ReadValueSafe(out float duration);
-            GameNetworkManager.Instance.StartCoroutine(StaminaCoroutine(duration));
-        }
-
-        private static IEnumerator StaminaCoroutine(float duration)
-        {
-            float elapsed = 0f;
-            var player = GameNetworkManager.Instance?.localPlayerController;
-            if (player == null) yield break;
-
-            Plugin.Log.LogInfo($"[ChaosNetworkHandler] Infinite stamina for {duration}s.");
-            while (elapsed < duration)
-            {
-                player.sprintMeter = 1f;
-                elapsed += Time.deltaTime;
-                yield return null;
-            }
         }
     }
 }

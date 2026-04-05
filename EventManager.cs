@@ -59,6 +59,12 @@ namespace LCChaosMod
                 yield return new WaitForSeconds(Mathf.Max(0f, wait - 5f));
                 Plugin.Log.LogInfo("[EventManager] Picking event...");
 
+                if (StartOfRound.Instance == null || StartOfRound.Instance.inShipPhase)
+                {
+                    Plugin.Log.LogInfo("[EventManager] Ship phase — stopping loop.");
+                    yield break;
+                }
+
                 var next = PickEvent();
                 if (next == null)
                 {
@@ -68,7 +74,7 @@ namespace LCChaosMod
                 }
 
                 Plugin.Log.LogInfo($"[EventManager] Chose: {next.GetName()}");
-                ShowWarning(next.GetName());
+                ChaosNetworkHandler.BroadcastWarning(next.GetName());
                 yield return new WaitForSeconds(5f);
 
                 Plugin.Log.LogInfo($"[EventManager] Executing: {next.GetName()}");
@@ -84,15 +90,5 @@ namespace LCChaosMod
             return available[UnityEngine.Random.Range(0, available.Count)];
         }
 
-        private static void ShowWarning(string eventName)
-        {
-            bool ua = ChaosSettings.Language.Value == "UA";
-            string title = ua ? "ХАОС" : "CHAOS";
-            string msg = ua
-                ? $"{eventName} через 5 секунд!"
-                : $"{eventName} in 5 seconds!";
-
-            HUDManager.Instance?.DisplayTip(title, msg, isWarning: true);
-        }
     }
 }

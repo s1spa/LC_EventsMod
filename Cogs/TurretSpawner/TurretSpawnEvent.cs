@@ -4,6 +4,7 @@ using GameNetcodeStuff;
 using LCChaosMod.Utils;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace LCChaosMod.Cogs
 {
@@ -68,6 +69,9 @@ namespace LCChaosMod.Cogs
             float ox = Random.Range(-8f, 8f);
             float oz = Random.Range(-8f, 8f);
             Vector3 pos = target.transform.position + new Vector3(ox, 0f, oz);
+
+            if (NavMesh.SamplePosition(pos, out NavMeshHit hit, 5f, NavMesh.AllAreas))
+                pos = hit.position;
 
             Transform parent = RoundManager.Instance.mapPropsContainer.transform;
             GameObject go = Object.Instantiate(prefab, pos, Quaternion.identity, parent);

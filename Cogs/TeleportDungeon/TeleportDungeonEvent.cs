@@ -38,7 +38,7 @@ namespace LCChaosMod.Cogs
             {
                 Vector3 dest = nodes[Random.Range(0, nodes.Length)].transform.position;
                 Plugin.Log.LogInfo($"[TeleportDungeonEvent] Teleporting {player.playerUsername} to {dest}.");
-                player.TeleportPlayer(dest);
+                ChaosNetworkHandler.SendTeleport(player, dest, toShip: false);
             }
         }
 

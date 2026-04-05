@@ -22,6 +22,7 @@ namespace LCChaosMod.Patches
 
             if (scene.name.StartsWith("Level"))
             {
+                ChaosNetworkHandler.Init();
                 StartRound();
             }
             else if (scene.name == "SampleSceneRelay")
@@ -33,7 +34,7 @@ namespace LCChaosMod.Patches
         private static void StartRound()
         {
             if (!ChaosSettings.ModEnabled.Value) return;
-            if (!GameNetworkManager.Instance.isHostingGame) return;
+            if (!Unity.Netcode.NetworkManager.Singleton.IsServer) return;
             if (EventManager.Instance != null) return;
             // Skip Gordion (company moon) — it's "LevelGordion" but just in case check name too
             if (StartOfRound.Instance != null && StartOfRound.Instance.currentLevelID == 3) return;

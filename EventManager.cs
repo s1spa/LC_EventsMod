@@ -24,16 +24,17 @@ namespace LCChaosMod
 
         private void Start()
         {
-            // TODO: зареєструвати евенти тут коли будуть готові
-            // _events.Add(new MineSpawnEvent());
+            _events.Add(new Cogs.MineSpawnEvent());
+            Plugin.Log.LogInfo($"[EventManager] Start() — {_events.Count} events registered.");
 
             if (_events.Count == 0)
             {
-                Plugin.Log.LogWarning("EventManager: жодного евенту не зареєстровано.");
+                Plugin.Log.LogWarning("[EventManager] no events registered.");
                 return;
             }
 
             _loop = StartCoroutine(EventLoop());
+            Plugin.Log.LogInfo("[EventManager] EventLoop coroutine started.");
         }
 
         private void OnDestroy()
@@ -44,21 +45,30 @@ namespace LCChaosMod
 
         private IEnumerator EventLoop()
         {
+            Plugin.Log.LogInfo("[EventManager] EventLoop entered.");
             while (true)
             {
                 float wait = UnityEngine.Random.Range(ChaosSettings.MinInterval.Value, ChaosSettings.MaxInterval.Value);
+                Plugin.Log.LogInfo($"[EventManager] Next event in {wait:F1}s.");
 
-                // Чекаємо (інтервал мінус 5 секунд для попередження)
                 yield return new WaitForSeconds(Mathf.Max(0f, wait - 5f));
+                Plugin.Log.LogInfo("[EventManager] Picking event...");
 
                 var next = PickEvent();
-                if (next == null) { yield return new WaitForSeconds(5f); continue; }
+                if (next == null)
+                {
+                    Plugin.Log.LogWarning("[EventManager] No event available, skipping.");
+                    yield return new WaitForSeconds(5f);
+                    continue;
+                }
 
+                Plugin.Log.LogInfo($"[EventManager] Chose: {next.GetName()}");
                 ShowWarning(next.GetName());
                 yield return new WaitForSeconds(5f);
 
+                Plugin.Log.LogInfo($"[EventManager] Executing: {next.GetName()}");
                 try { next.Execute(); }
-                catch (Exception ex) { Plugin.Log.LogError($"[EventManager] Помилка '{next.GetName()}': {ex}"); }
+                catch (Exception ex) { Plugin.Log.LogError($"[EventManager] Error '{next.GetName()}': {ex}"); }
             }
         }
 

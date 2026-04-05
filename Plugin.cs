@@ -17,9 +17,13 @@ namespace LCChaosMod
             Instance = this;
             Log = Logger;
 
+            // Реєструємо локалізацію кожного Cog
+            Cogs.MineSpawner.Lang.Init();
+
             ChaosSettings.Init(Config);
             _harmony.PatchAll();
             UI.MainMenuInjector.Init();
+            Patches.RoundLifecycle.Init();
 
             Log.LogInfo($"{MyPluginInfo.PLUGIN_NAME} v{MyPluginInfo.PLUGIN_VERSION} loaded!");
         }

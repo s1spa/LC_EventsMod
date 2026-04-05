@@ -58,7 +58,7 @@
   <!-- Auto-deploy after build -->
   <Target Name="DeployToBepInEx" AfterTargets="Build">
     <Copy SourceFiles="$(TargetPath)"
-          DestinationFolder="C:\Users\s1sp\AppData\Roaming\Thunderstore Mod Manager\DataFolder\LethalCompany\profiles\Piazda\BepInEx\plugins\LCChaosMod\"
+          DestinationFolder="C:\Users\s1sp\AppData\Roaming\Thunderstore Mod Manager\DataFolder\LethalCompany\profiles\TestProfile\BepInEx\plugins\LCChaosMod\"
           OverwriteReadOnlyFiles="true" />
     <Message Text="[LCChaosMod] Deployed to BepInEx plugins." Importance="high" />
   </Target>

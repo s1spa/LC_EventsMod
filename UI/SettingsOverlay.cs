@@ -13,6 +13,16 @@ namespace LCChaosMod.UI
         private int   _diff;    // 1-5
         private int   _langIdx; // 0=EN 1=UA
 
+        // ── Евенти ──────────────────────────────────────────────────
+        private bool  _evtMines;
+        private int   _mineCountMin;
+        private int   _mineCountMax;
+        private float _mineRateMin;
+        private float _mineRateMax;
+
+        // яка подія зараз розгорнута (-1 = жодна)
+        private int   _expandedEvt = -1;
+
         // ── Кольори (#FF5000 як основний) ───────────────────────
         private static readonly Color CMain   = new Color(1.00f, 0.314f, 0.00f); // #FF5000
         private static readonly Color CMainDim= new Color(0.55f, 0.17f,  0.00f); // тьмяний
@@ -42,7 +52,7 @@ namespace LCChaosMod.UI
         {
             LoadFromConfig();
             _visible = true;
-            _winRect = new Rect(Screen.width / 2f - 420f, Screen.height / 2f - 185f, 840f, 370f);
+            _winRect = new Rect(Screen.width / 2f - 420f, Screen.height / 2f - 230f, 840f, 460f);
             Cursor.visible   = true;
             Cursor.lockState = CursorLockMode.None;
         }
@@ -90,46 +100,34 @@ namespace LCChaosMod.UI
             GUILayout.Space(10);
 
             // ── Слайдери ─────────────────────────────────────────
-            SliderRow(Loc.Get("ui.min_interval"), ref _minInt, 30f, 300f);
+            SliderRow(Loc.Get("ui.min_interval"), ref _minInt, 5f, 300f);
             GUILayout.Space(8);
-            SliderRow(Loc.Get("ui.max_interval"), ref _maxInt, 60f, 600f);
+            SliderRow(Loc.Get("ui.max_interval"), ref _maxInt, 10f, 600f);
             GUILayout.Space(2);
 
             GUILayout.Space(10);
             DrawHLine(W, pad);
-            GUILayout.Space(10);
+            GUILayout.Space(8);
 
-            // ── Складність ──────────────────────────────────────
+            // ── Евенти: акордеон ────────────────────────────────────
             GUILayout.BeginHorizontal();
             GUILayout.Space(pad);
-            GUILayout.Label(Loc.Get("ui.severity"), _sLbl!, GUILayout.Width(150));
-            GUILayout.Space(8);
-            for (int d = 0; d < Diffs.Length; d++)
-            {
-                var st = _diff == d + 1 ? _sBtnOn! : _sBtnOff!;
-                if (GUILayout.Button(Loc.Get($"diff.{d + 1}"), st)) _diff = d + 1;
-                if (d < Diffs.Length - 1) GUILayout.Space(4);
-            }
+            GUILayout.Label(Loc.Get("ui.events"), _sLbl!, GUILayout.Width(120));
             GUILayout.Space(pad);
             GUILayout.EndHorizontal();
 
-            GUILayout.Space(10);
-            DrawHLine(W, pad);
-            GUILayout.Space(8);
-
-            // ── Порожній box для майбутніх івентів ──────────────
-            var evtRect = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none,
-                GUILayout.ExpandWidth(true), GUILayout.Height(80f));
-            if (Event.current.type == EventType.Repaint)
+            GUILayout.Space(4);
+            DrawEventRow(0, Loc.Get("event.mines"), ref _evtMines);
+            if (_expandedEvt == 0)
             {
-                float bw = 2f;
-                var old2 = GUI.color;
-                GUI.color = CMain;
-                GUI.DrawTexture(new Rect(pad,       evtRect.y,          W - pad*2, bw), Texture2D.whiteTexture);
-                GUI.DrawTexture(new Rect(pad,       evtRect.yMax - bw,  W - pad*2, bw), Texture2D.whiteTexture);
-                GUI.DrawTexture(new Rect(pad,       evtRect.y,          bw, evtRect.height), Texture2D.whiteTexture);
-                GUI.DrawTexture(new Rect(W - pad - bw, evtRect.y,       bw, evtRect.height), Texture2D.whiteTexture);
-                GUI.color = old2;
+                GUILayout.Space(4);
+                IntSliderRow(Loc.Get("ui.mine_count_min"), ref _mineCountMin, 1, 20);
+                GUILayout.Space(2);
+                IntSliderRow(Loc.Get("ui.mine_count_max"), ref _mineCountMax, 1, 20);
+                GUILayout.Space(2);
+                SliderRow(Loc.Get("ui.mine_rate_min"), ref _mineRateMin, 0.5f, 10f);
+                GUILayout.Space(2);
+                SliderRow(Loc.Get("ui.mine_rate_max"), ref _mineRateMax, 0.5f, 10f);
             }
 
             GUILayout.Space(8);
@@ -154,6 +152,31 @@ namespace LCChaosMod.UI
             GUI.DragWindow();
         }
 
+        // ── Рядок події (акордеон) ───────────────────────────────
+        private void DrawEventRow(int idx, string label, ref bool enabled)
+        {
+            bool expanded = _expandedEvt == idx;
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(40f);
+
+            // Назва події — кнопка розгортання
+            var headerStyle = expanded ? _sBtnOn! : _sBtnOff!;
+            string arrow = expanded ? "▼" : "▶";
+            if (GUILayout.Button($"{arrow}  {label}", headerStyle, GUILayout.Width(260)))
+                _expandedEvt = expanded ? -1 : idx;
+
+            if (expanded)
+            {
+                GUILayout.Space(10);
+                var togStyle = enabled ? _sBtnOn! : _sBtnOff!;
+                if (GUILayout.Button(enabled ? "[ON]" : "[OFF]", togStyle, GUILayout.Width(60)))
+                    enabled = !enabled;
+            }
+
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+        }
+
         // ── Горизонтальна лінія ──────────────────────────────────
         private void DrawHLine(float w, float pad)
         {
@@ -168,13 +191,24 @@ namespace LCChaosMod.UI
             }
         }
 
-        // ── Слайдер ──────────────────────────────────────────────
+        // ── Слайдер (float) ──────────────────────────────────────
         private void SliderRow(string label, ref float val, float min, float max)
         {
             GUILayout.BeginHorizontal();
             GUILayout.Space(20f);
-            GUILayout.Label($"{label}  {val:F0}s", _sLbl!, GUILayout.Width(310f));
+            GUILayout.Label($"{label}  {val:F1}s", _sLbl!, GUILayout.Width(310f));
             val = GUILayout.HorizontalSlider(val, min, max, _sSliderBg!, _sSliderThumb!);
+            GUILayout.Space(20f);
+            GUILayout.EndHorizontal();
+        }
+
+        // ── Слайдер (int) ────────────────────────────────────────
+        private void IntSliderRow(string label, ref int val, int min, int max)
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(20f);
+            GUILayout.Label($"{label}  {val}", _sLbl!, GUILayout.Width(310f));
+            val = Mathf.RoundToInt(GUILayout.HorizontalSlider(val, min, max, _sSliderBg!, _sSliderThumb!));
             GUILayout.Space(20f);
             GUILayout.EndHorizontal();
         }
@@ -302,6 +336,12 @@ namespace LCChaosMod.UI
             _diff    = Mathf.Clamp(ChaosSettings.Difficulty.Value, 1, 5);
             _langIdx = ChaosSettings.Language.Value == "UA" ? 1 : 0;
             Loc.SetLang(Langs[_langIdx]);
+
+            _evtMines     = ChaosSettings.EnableMines.Value;
+            _mineCountMin = ChaosSettings.MineCountMin.Value;
+            _mineCountMax = ChaosSettings.MineCountMax.Value;
+            _mineRateMin  = ChaosSettings.MineRateMin.Value;
+            _mineRateMax  = ChaosSettings.MineRateMax.Value;
         }
 
         private void SaveToConfig()
@@ -310,6 +350,12 @@ namespace LCChaosMod.UI
             ChaosSettings.MaxInterval.Value = _maxInt;
             ChaosSettings.Difficulty.Value  = _diff;
             ChaosSettings.Language.Value    = Langs[_langIdx];
+
+            ChaosSettings.EnableMines.Value  = _evtMines;
+            ChaosSettings.MineCountMin.Value = _mineCountMin;
+            ChaosSettings.MineCountMax.Value = _mineCountMax;
+            ChaosSettings.MineRateMin.Value  = _mineRateMin;
+            ChaosSettings.MineRateMax.Value  = _mineRateMax;
         }
     }
 }

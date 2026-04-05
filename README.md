@@ -39,8 +39,8 @@ A dedicated button in the Main Menu allows you to configure the mod:
 ## 📦 Installation
 1. Ensure you have [BepInExPack](https://thunderstore.io/c/lethal-company/p/BepInEx/BepInExPack/) installed.
 2. Install [LethalLib](https://thunderstore.io/c/lethal-company/p/Evaisa/LethalLib/).
-3. Download `LC_ChaosMod.dll` from the Releases section.
-4. Place the file into your `Lethal Company/BepInEx/plugins` folder.
+3. Download `LC_ChaoseEvent.dll` from the Releases section.
+4. Place the file into your `Lethal Company/BepInEx/plugins/LC_ChaoseEvent` folder.
 
 ---
 *Created by [s1spa](https://github.com/s1spa) with chaos in mind.*

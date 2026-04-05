@@ -1,8 +1,8 @@
-# Lethal Company: Chaos Mod 🧨
+# Lethal Company: Event Mod 🧨
 
 [![Version](https://img.shields.io/badge/version-0.4.0-orange.svg)](https://github.com/s1spa/LC_ChaosMod)
 
-**Chaos Mod** is a plugin for Lethal Company that turns a standard quota run into a true test of survival. No more peaceful looting: the game will randomly throw "surprises" at you that directly impact your chances of making it back alive.
+**Event Mod** is a plugin for Lethal Company that turns a standard quota run into a true test of survival. No more peaceful looting: the game will randomly throw "surprises" at you that directly impact your chances of making it back alive.
 
 ## 🛡️ Core Rule: Safe Zone
 * **The Ship is a total Safe Zone**.
@@ -19,11 +19,11 @@
 ## 🛠️ Event Roadmap
 You can toggle specific events and adjust their intensity in the settings menu.
 
-- [ ] **Mine Rain** — Landmines randomly spawn around the player every 1-3 seconds.
-- [ ] **Turret Ambush** — 2 to 4 turrets suddenly spawn in your immediate vicinity.
-- [ ] **Monster Spawn** — A random monster is instantly spawned near the player.
-- [ ] **Dungeon Warp** — Teleports the player to a random location within the facility (Indoor only).
-- [ ] **Emergency Recall** — Suddenly teleports the player back to the safety of the ship.
+- [x] **Mine Rain** — Landmines randomly spawn around the player every 1-3 seconds.
+- [x] **Turret Ambush** — 2 to 4 turrets suddenly spawn in your immediate vicinity.
+- [x] **Monster Spawn** — A random monster is instantly spawned near the player.
+- [x] **Dungeon Warp** — Teleports the player to a random location within the facility (Indoor only).
+- [x] **Emergency Recall** — Suddenly teleports the player back to the safety of the ship.
 - [ ] **Swap** — Two random players swap positions (Excludes players on the ship).
 - [ ] **Fake Loot** — Deceptive items that explode or vanish when you try to pick them up.
 - [ ] **Ghost Hunt** — Fake footsteps, laughter, or visual glitches to trigger paranoia.

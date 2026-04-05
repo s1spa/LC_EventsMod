@@ -20,7 +20,7 @@
 ## 🛠️ Event Roadmap
 You can toggle specific events and adjust their intensity in the settings menu.
 
-- [ ] **Mine Rain** — Landmines randomly spawn around the player every 1-3 seconds.
+- [x] **Mine Rain** — Landmines randomly spawn around the player every 1-3 seconds.
 - [ ] **Turret Ambush** — 2 to 4 turrets suddenly spawn in your immediate vicinity.
 - [ ] **Monster Spawn** — A random monster is instantly spawned near the player.
 - [ ] **Dungeon Warp** — Teleports the player to a random location within the facility (Indoor only).

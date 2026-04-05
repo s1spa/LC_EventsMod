@@ -1,8 +1,8 @@
-# Lethal Company: Chaos Mod 🧨
+# Lethal Company: Event Mod 🧨
 
 [![Version](https://img.shields.io/badge/version-0.4.0-orange.svg)](https://github.com/s1spa/LC_ChaosMod)
 
-**Chaos Mod** is a plugin for Lethal Company that turns a standard quota run into a true test of survival. No more peaceful looting: the game will randomly throw "surprises" at you that directly impact your chances of making it back alive.
+**Event Mod** is a plugin for Lethal Company that turns a standard quota run into a true test of survival. No more peaceful looting: the game will randomly throw "surprises" at you that directly impact your chances of making it back alive.
 
 ## 🛡️ Core Rule: Safe Zone
 * **The Ship is a total Safe Zone**.

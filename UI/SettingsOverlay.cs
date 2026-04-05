@@ -2,23 +2,33 @@ using UnityEngine;
 
 namespace LCChaosMod.UI
 {
-    /// <summary>
-    /// IMGUI оверлей з налаштуваннями мода.
-    /// Відкривається по кліку на кнопку в settings меню гри.
-    /// </summary>
     public class SettingsOverlay : MonoBehaviour
     {
         public static SettingsOverlay? Instance { get; private set; }
 
-        private bool _visible;
-        private Rect _windowRect = new(Screen.width / 2f - 300f, Screen.height / 2f - 250f, 600f, 500f);
+        private bool  _visible;
+        private Rect  _winRect;
+        private float _minInt;
+        private float _maxInt;
+        private int   _diff;    // 1-5
+        private int   _langIdx; // 0=EN 1=UA
 
-        // Локальні значення поки не збережено
-        private float _minInterval;
-        private float _maxInterval;
-        private int _difficulty;
-        private bool _langUA;
+        // ── Кольори (#FF5000 як основний) ───────────────────────
+        private static readonly Color CMain   = new Color(1.00f, 0.314f, 0.00f); // #FF5000
+        private static readonly Color CMainDim= new Color(0.55f, 0.17f,  0.00f); // тьмяний
+        private static readonly Color CBg     = new Color(0.03f, 0.008f, 0.00f, 0.95f); // темний фон з помаранчевим відтінком
+        private static readonly Color CActTxt = new Color(0.20f, 0.06f,  0.00f); // темний текст на active кнопці
 
+        private static readonly string[] Langs = { "EN", "UA" };
+        private static readonly string[] Diffs = { "НУБ", "СЛАБАК", "НОРМАЛЬНО", "ВАЖКОВАТО", "МЕГА ЛЕГКО" };
+
+        // ── Стилі ───────────────────────────────────────────────
+        private GUIStyle? _sWin, _sTitle, _sLang, _sLbl,
+                          _sBtnOff, _sBtnOn,
+                          _sSliderBg, _sSliderThumb, _sFooter;
+        private Texture2D? _txBg, _txMain, _txDim, _txBtnOff, _txBtnOn;
+
+        // ── Lifecycle ────────────────────────────────────────────
         private void Awake()
         {
             if (Instance != null) { Destroy(gameObject); return; }
@@ -26,112 +36,280 @@ namespace LCChaosMod.UI
             DontDestroyOnLoad(gameObject);
             LoadFromConfig();
         }
-
         private void OnDestroy() => Instance = null;
 
         public void Show()
         {
             LoadFromConfig();
             _visible = true;
-            Cursor.visible = true;
+            _winRect = new Rect(Screen.width / 2f - 420f, Screen.height / 2f - 185f, 840f, 370f);
+            Cursor.visible   = true;
             Cursor.lockState = CursorLockMode.None;
         }
-
         public void Hide() => _visible = false;
 
+        // ── OnGUI ────────────────────────────────────────────────
         private void OnGUI()
         {
             if (!_visible) return;
+            EnsureStyles();
 
-            // Темний фон
-            GUI.color = new Color(0f, 0f, 0f, 0.85f);
+            var old = GUI.color;
+            GUI.color = new Color(0f, 0f, 0f, 0.88f);
             GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), Texture2D.whiteTexture);
-            GUI.color = Color.white;
+            GUI.color = old;
 
-            _windowRect = GUI.Window(9999, _windowRect, DrawWindow, "CHAOS MOD SETTINGS");
+            _winRect = GUI.Window(9999, _winRect, Draw, GUIContent.none, _sWin!);
         }
 
-        private void DrawWindow(int id)
+        private void Draw(int id)
         {
-            GUILayout.Space(10);
+            float W = _winRect.width;
+            float H = _winRect.height;
+            float pad = 20f;
 
-            // ── Мова ──────────────────────────────────────────
-            GUILayout.Label("Language / Мова:");
+            GUILayout.Space(12);
+
+            // ── Заголовок ───────────────────────────────────────
+            GUILayout.Label(Loc.Get("ui.title"), _sTitle!);
+            GUILayout.Space(6);
+
+            // ── Мова ────────────────────────────────────────────
             GUILayout.BeginHorizontal();
-            if (GUILayout.Toggle(!_langUA, " EN")) _langUA = false;
-            if (GUILayout.Toggle(_langUA, " UA")) _langUA = true;
-            GUILayout.EndHorizontal();
-
-            GUILayout.Space(10);
-
-            // ── Таймінг ───────────────────────────────────────
-            GUILayout.Label($"Min interval: {_minInterval:F0}s");
-            _minInterval = GUILayout.HorizontalSlider(_minInterval, 30f, 300f);
-
-            GUILayout.Label($"Max interval: {_maxInterval:F0}s");
-            _maxInterval = GUILayout.HorizontalSlider(_maxInterval, 60f, 600f);
-
-            GUILayout.Space(10);
-
-            // ── Складність ────────────────────────────────────
-            GUILayout.Label($"Difficulty: {DifficultyLabel(_difficulty)}");
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("1 - Easy")) _difficulty = 1;
-            if (GUILayout.Button("2 - Normal")) _difficulty = 2;
-            if (GUILayout.Button("3 - Chaos")) _difficulty = 3;
-            GUILayout.EndHorizontal();
-
-            GUILayout.Space(10);
-
-            // ── Евенти ────────────────────────────────────────
-            GUILayout.Label("Events:");
-            ChaosSettings.EnableMines.Value = GUILayout.Toggle(ChaosSettings.EnableMines.Value, " Mines");
-            ChaosSettings.EnableTurrets.Value = GUILayout.Toggle(ChaosSettings.EnableTurrets.Value, " Turrets");
-            ChaosSettings.EnableMobSpawn.Value = GUILayout.Toggle(ChaosSettings.EnableMobSpawn.Value, " Random mob");
-            ChaosSettings.EnableTeleportDungeon.Value = GUILayout.Toggle(ChaosSettings.EnableTeleportDungeon.Value, " Teleport (dungeon)");
-            ChaosSettings.EnableTeleportShip.Value = GUILayout.Toggle(ChaosSettings.EnableTeleportShip.Value, " Teleport to ship");
-            ChaosSettings.EnablePlayerSwap.Value = GUILayout.Toggle(ChaosSettings.EnablePlayerSwap.Value, " Player swap");
-            ChaosSettings.EnableGlowstick.Value = GUILayout.Toggle(ChaosSettings.EnableGlowstick.Value, " Glowstick (Apparatus)");
-
-            GUILayout.Space(15);
-
-            // ── Кнопки ────────────────────────────────────────
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Save & Close"))
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button($"> {Loc.Get("ui.lang")}: {Langs[_langIdx]}", _sLang!, GUILayout.Width(220)))
             {
-                SaveToConfig();
-                Hide();
+                _langIdx = (_langIdx + 1) % Langs.Length;
+                Loc.SetLang(Langs[_langIdx]);
             }
-            if (GUILayout.Button("Cancel"))
-            {
-                Hide();
-            }
+            GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
+
+            GUILayout.Space(16);
+            DrawHLine(W, pad);
+            GUILayout.Space(10);
+
+            // ── Слайдери ─────────────────────────────────────────
+            SliderRow(Loc.Get("ui.min_interval"), ref _minInt, 30f, 300f);
+            GUILayout.Space(8);
+            SliderRow(Loc.Get("ui.max_interval"), ref _maxInt, 60f, 600f);
+            GUILayout.Space(2);
+
+            GUILayout.Space(10);
+            DrawHLine(W, pad);
+            GUILayout.Space(10);
+
+            // ── Складність ──────────────────────────────────────
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(pad);
+            GUILayout.Label(Loc.Get("ui.severity"), _sLbl!, GUILayout.Width(150));
+            GUILayout.Space(8);
+            for (int d = 0; d < Diffs.Length; d++)
+            {
+                var st = _diff == d + 1 ? _sBtnOn! : _sBtnOff!;
+                if (GUILayout.Button(Loc.Get($"diff.{d + 1}"), st)) _diff = d + 1;
+                if (d < Diffs.Length - 1) GUILayout.Space(4);
+            }
+            GUILayout.Space(pad);
+            GUILayout.EndHorizontal();
+
+            GUILayout.Space(10);
+            DrawHLine(W, pad);
+            GUILayout.Space(8);
+
+            // ── Порожній box для майбутніх івентів ──────────────
+            var evtRect = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none,
+                GUILayout.ExpandWidth(true), GUILayout.Height(80f));
+            if (Event.current.type == EventType.Repaint)
+            {
+                float bw = 2f;
+                var old2 = GUI.color;
+                GUI.color = CMain;
+                GUI.DrawTexture(new Rect(pad,       evtRect.y,          W - pad*2, bw), Texture2D.whiteTexture);
+                GUI.DrawTexture(new Rect(pad,       evtRect.yMax - bw,  W - pad*2, bw), Texture2D.whiteTexture);
+                GUI.DrawTexture(new Rect(pad,       evtRect.y,          bw, evtRect.height), Texture2D.whiteTexture);
+                GUI.DrawTexture(new Rect(W - pad - bw, evtRect.y,       bw, evtRect.height), Texture2D.whiteTexture);
+                GUI.color = old2;
+            }
+
+            GUILayout.Space(8);
+
+            // ── Absolute bottom: Save, Cancel, BIOS, Company ────
+            float btnY    = H - 36f;
+            float biosY   = H - 18f;
+            float btnH    = 26f;
+            float footH   = 16f;
+
+            GUI.Label(new Rect(pad, biosY, 120f, footH), "BIOS VER 0.9",        _sFooter!);
+            GUI.Label(new Rect(W - pad - 175f, biosY, 175f, footH), "COMPANY DIRECTIVE  ✦", _sFooter!);
+
+            float saveW = 140f, cancelW = 90f, gap = 8f;
+            float totalBtns = saveW + gap + cancelW;
+            float bx = (W - totalBtns) / 2f;
+            if (GUI.Button(new Rect(bx,               btnY, saveW,   btnH), Loc.Get("ui.save"),   _sBtnOn!))
+                { SaveToConfig(); Hide(); }
+            if (GUI.Button(new Rect(bx + saveW + gap, btnY, cancelW, btnH), Loc.Get("ui.cancel"), _sBtnOff!))
+                Hide();
 
             GUI.DragWindow();
         }
 
+        // ── Горизонтальна лінія ──────────────────────────────────
+        private void DrawHLine(float w, float pad)
+        {
+            var r = GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none,
+                GUILayout.ExpandWidth(true), GUILayout.Height(2f));
+            if (Event.current.type == EventType.Repaint)
+            {
+                var old = GUI.color;
+                GUI.color = CMainDim;
+                GUI.DrawTexture(new Rect(pad, r.y, w - pad * 2f, 1f), Texture2D.whiteTexture);
+                GUI.color = old;
+            }
+        }
+
+        // ── Слайдер ──────────────────────────────────────────────
+        private void SliderRow(string label, ref float val, float min, float max)
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(20f);
+            GUILayout.Label($"{label}  {val:F0}s", _sLbl!, GUILayout.Width(310f));
+            val = GUILayout.HorizontalSlider(val, min, max, _sSliderBg!, _sSliderThumb!);
+            GUILayout.Space(20f);
+            GUILayout.EndHorizontal();
+        }
+
+        // ── Стилі ────────────────────────────────────────────────
+        private void EnsureStyles()
+        {
+            if (_sWin != null) return;
+
+            _txBg     = Tex(CBg);
+            _txMain   = Tex(CMain);
+            _txDim    = Tex(CMainDim);
+            _txBtnOff = MakeBorder(CMain, CBg, 20, 2);
+            _txBtnOn  = Tex(CMain);
+
+            var txBtnOnHov = Tex(new Color(1.00f, 0.45f, 0.05f));
+
+            _sWin = new GUIStyle(GUI.skin.box)
+            {
+                normal  = { background = _txBg, textColor = CMain },
+                padding = new RectOffset(0, 0, 0, 0),
+                border  = new RectOffset(1, 1, 1, 1),
+            };
+
+            _sTitle = new GUIStyle(GUI.skin.label)
+            {
+                alignment = TextAnchor.MiddleCenter,
+                fontSize  = 22,
+                fontStyle = FontStyle.Bold,
+                normal    = { textColor = CMain },
+            };
+
+            _sLang = new GUIStyle(GUI.skin.button)
+            {
+                alignment = TextAnchor.MiddleCenter,
+                fontSize  = 13,
+                fontStyle = FontStyle.Bold,
+                normal    = { background = _txBtnOff, textColor = CMain },
+                hover     = { background = _txBtnOn,  textColor = CActTxt },
+                active    = { background = _txBtnOn,  textColor = CActTxt },
+                border    = new RectOffset(2, 2, 2, 2),
+                padding   = new RectOffset(8, 8, 5, 5),
+            };
+
+            _sLbl = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 13,
+                normal   = { textColor = CMain },
+            };
+
+            // Outline кнопка (невибрана)
+            _sBtnOff = new GUIStyle(GUI.skin.button)
+            {
+                fontSize  = 12,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleCenter,
+                normal    = { background = _txBtnOff,  textColor = CMain },
+                hover     = { background = _txBtnOn,   textColor = CActTxt },
+                active    = { background = _txBtnOn,   textColor = CActTxt },
+                border    = new RectOffset(2, 2, 2, 2),
+                padding   = new RectOffset(6, 6, 4, 4),
+            };
+
+            // Filled кнопка (вибрана / save) — як "Join a crew"
+            _sBtnOn = new GUIStyle(_sBtnOff)
+            {
+                normal = { background = _txBtnOn,    textColor = CActTxt },
+                hover  = { background = txBtnOnHov,  textColor = CActTxt },
+                active = { background = _txBtnOn,    textColor = CActTxt },
+            };
+
+            _sFooter = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 10,
+                normal   = { textColor = CMainDim },
+            };
+
+            // Slider track: тонка помаранчева лінія
+            _sSliderBg = new GUIStyle(GUI.skin.horizontalSlider)
+            {
+                normal      = { background = _txMain },
+                border      = new RectOffset(0, 0, 0, 0),
+                fixedHeight = 3f,
+                margin      = new RectOffset(0, 0, 10, 10),
+            };
+
+            // Slider thumb: білий круг
+            _sSliderThumb = new GUIStyle(GUI.skin.horizontalSliderThumb)
+            {
+                normal      = { background = MakeCircle(16, Color.white) },
+                fixedWidth  = 16f,
+                fixedHeight = 16f,
+            };
+        }
+
+        private static Texture2D Tex(Color c)
+        {
+            var t = new Texture2D(1, 1); t.SetPixel(0, 0, c); t.Apply(); return t;
+        }
+
+        private static Texture2D MakeBorder(Color border, Color fill, int size = 20, int bw = 2)
+        {
+            var t = new Texture2D(size, size);
+            for (int x = 0; x < size; x++)
+            for (int y = 0; y < size; y++)
+                t.SetPixel(x, y, (x < bw || x >= size - bw || y < bw || y >= size - bw) ? border : fill);
+            t.Apply(); return t;
+        }
+
+        private static Texture2D MakeCircle(int size, Color col)
+        {
+            var t = new Texture2D(size, size); t.filterMode = FilterMode.Bilinear;
+            float r = size / 2f;
+            for (int x = 0; x < size; x++)
+            for (int y = 0; y < size; y++)
+            { float dx = x - r + .5f, dy = y - r + .5f; t.SetPixel(x, y, dx*dx+dy*dy <= r*r ? col : Color.clear); }
+            t.Apply(); return t;
+        }
+
+        // ── Config ───────────────────────────────────────────────
         private void LoadFromConfig()
         {
-            _minInterval = ChaosSettings.MinInterval.Value;
-            _maxInterval = ChaosSettings.MaxInterval.Value;
-            _difficulty = ChaosSettings.Difficulty.Value;
-            _langUA = ChaosSettings.Language.Value == "UA";
+            _minInt  = ChaosSettings.MinInterval.Value;
+            _maxInt  = ChaosSettings.MaxInterval.Value;
+            _diff    = Mathf.Clamp(ChaosSettings.Difficulty.Value, 1, 5);
+            _langIdx = ChaosSettings.Language.Value == "UA" ? 1 : 0;
+            Loc.SetLang(Langs[_langIdx]);
         }
 
         private void SaveToConfig()
         {
-            ChaosSettings.MinInterval.Value = _minInterval;
-            ChaosSettings.MaxInterval.Value = _maxInterval;
-            ChaosSettings.Difficulty.Value = _difficulty;
-            ChaosSettings.Language.Value = _langUA ? "UA" : "EN";
+            ChaosSettings.MinInterval.Value = _minInt;
+            ChaosSettings.MaxInterval.Value = _maxInt;
+            ChaosSettings.Difficulty.Value  = _diff;
+            ChaosSettings.Language.Value    = Langs[_langIdx];
         }
-
-        private static string DifficultyLabel(int d) => d switch
-        {
-            1 => "Easy",
-            3 => "Chaos",
-            _ => "Normal"
-        };
     }
 }

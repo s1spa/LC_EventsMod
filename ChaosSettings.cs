@@ -44,8 +44,8 @@ namespace LCChaosMod
             ModEnabled = config.Bind("General", "Enabled", true, "Вмикає/вимикає мод повністю");
             Language = config.Bind("General", "Language", "EN", "Мова повідомлень: EN / UA");
 
-            MinInterval = config.Bind("Timing", "MinInterval", 15f,  "Мінімальний інтервал між евентами (секунди)");
-            MaxInterval = config.Bind("Timing", "MaxInterval", 30f,  "Максимальний інтервал між евентами (секунди)");
+            MinInterval = config.Bind("Timing", "MinInterval", 20f,  "Мінімальний інтервал між евентами (секунди)");
+            MaxInterval = config.Bind("Timing", "MaxInterval", 120f,  "Максимальний інтервал між евентами (секунди)");
 
             Difficulty = config.Bind("Difficulty", "Level", 2, "Складність: 1 (легко) — 3 (хаос)");
 

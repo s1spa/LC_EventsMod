@@ -6,7 +6,7 @@ namespace LCChaosMod.Cogs.PlayerSwap
     {
         public static void Init()
         {
-            Loc.Register("event.player_swap", "Player Swap", "Підміна гравців");
+            Loc.Register("event.player_swap", "Positioning Error", "Помилка позиціонування");
         }
     }
 }

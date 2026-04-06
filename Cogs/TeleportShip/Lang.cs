@@ -4,7 +4,7 @@ namespace LCChaosMod.Cogs.TeleportShip
     {
         internal static void Init()
         {
-            Loc.Register("event.teleport_ship", "Back to the ship!", "Всіх на корабель!");
+            Loc.Register("event.teleport_ship", "Lunch Break!", "Обідня перерва!");
         }
     }
 }

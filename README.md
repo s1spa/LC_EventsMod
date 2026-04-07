@@ -30,6 +30,7 @@ You can toggle specific events and adjust their intensity in the settings menu.
 - [x] **Adrenaline Rush** — Players get infinite stamina but can't stop running forward for a configurable duration.
 - [x] **Football** — All dropped items become footballs: running near any item kicks it with a smooth parabolic arc, complete with wall bouncing.
 - [x] **Company Alert** — A fake critical message from The Company appears on everyone's screen. Ship leaving? Quota doubled? Assets confiscated? All lies.
+- [x] **Size Matters** — A random player shrinks to a fraction of their size. Their camera drops, and their voice becomes a squeak. Configurable scale and duration.
 - [ ] **Fake Loot** — Deceptive items that explode or vanish when you try to pick them up.
 - [ ] **Ghost Hunt** — Fake footsteps, laughter, or visual glitches to trigger paranoia.
 

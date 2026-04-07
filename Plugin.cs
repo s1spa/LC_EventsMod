@@ -31,6 +31,7 @@ namespace LCChaosMod
             Cogs.Football.Lang.Init();
             Cogs.FakeMessage.Lang.Init();
             Cogs.SizeMatters.Lang.Init();
+            Cogs.RagdollParty.Lang.Init();
 
             ChaosSettings.Init(Config);
             _harmony.PatchAll();

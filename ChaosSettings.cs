@@ -46,6 +46,9 @@ namespace LCChaosMod
         public static ConfigEntry<bool>  EnableSizeMatters     { get; private set; } = null!;
         public static ConfigEntry<float> SizeScale             { get; private set; } = null!;
         public static ConfigEntry<float> SizeDuration          { get; private set; } = null!;
+        public static ConfigEntry<bool>  EnableRagdollParty    { get; private set; } = null!;
+        public static ConfigEntry<float> RagdollDurationMin   { get; private set; } = null!;
+        public static ConfigEntry<float> RagdollDurationMax   { get; private set; } = null!;
 
         public static void Init(ConfigFile config)
         {
@@ -85,6 +88,9 @@ namespace LCChaosMod
             EnableSizeMatters     = config.Bind("Events", "SizeMatters",        true,  "Зміна розміру гравця");
             SizeScale             = config.Bind("Events", "SizeScale",          0.4f,  "Розмір гравця (0.1 - 1.0)");
             SizeDuration          = config.Bind("Events", "SizeDuration",       15f,   "Тривалість зміни розміру (секунди)");
+            EnableRagdollParty    = config.Bind("Events", "RagdollParty",       true,  "Рагдол вечірка — гравець спотикається");
+            RagdollDurationMin    = config.Bind("Events", "RagdollDurationMin", 3f,    "Мінімальна тривалість рагдолу (секунди)");
+            RagdollDurationMax    = config.Bind("Events", "RagdollDurationMax", 4f,    "Максимальна тривалість рагдолу (секунди)");
         }
     }
 }

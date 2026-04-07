@@ -42,6 +42,7 @@ namespace LCChaosMod.UI
         private bool  _evtSizeMatters;
         private float _sizeScale;
         private float _sizeDuration;
+        private bool  _evtRagdollParty;
 
         private Vector2 _evtScroll;
 
@@ -224,6 +225,8 @@ namespace LCChaosMod.UI
 
             GUILayout.Space(4);
             DrawEventRow(12, Loc.Get("event.size_matters"), ref _evtSizeMatters);
+            GUILayout.Space(4);
+            DrawEventRow(13, Loc.Get("event.ragdoll_party"), ref _evtRagdollParty);
             if (_expandedEvt == 12)
             {
                 GUILayout.Space(4);
@@ -469,6 +472,7 @@ namespace LCChaosMod.UI
             _evtSizeMatters       = ChaosSettings.EnableSizeMatters.Value;
             _sizeScale            = ChaosSettings.SizeScale.Value;
             _sizeDuration         = ChaosSettings.SizeDuration.Value;
+            _evtRagdollParty      = ChaosSettings.EnableRagdollParty.Value;
             _evtTurrets     = ChaosSettings.EnableTurrets.Value;
             _turretCountMin = ChaosSettings.TurretCountMin.Value;
             _turretCountMax = ChaosSettings.TurretCountMax.Value;
@@ -505,6 +509,7 @@ namespace LCChaosMod.UI
             ChaosSettings.EnableSizeMatters.Value     = _evtSizeMatters;
             ChaosSettings.SizeScale.Value             = _sizeScale;
             ChaosSettings.SizeDuration.Value          = _sizeDuration;
+            ChaosSettings.EnableRagdollParty.Value    = _evtRagdollParty;
             ChaosSettings.EnableTurrets.Value  = _evtTurrets;
             ChaosSettings.TurretCountMin.Value = _turretCountMin;
             ChaosSettings.TurretCountMax.Value = _turretCountMax;

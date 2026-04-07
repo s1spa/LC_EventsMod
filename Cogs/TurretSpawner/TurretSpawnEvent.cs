@@ -70,8 +70,18 @@ namespace LCChaosMod.Cogs
             float oz = Random.Range(-8f, 8f);
             Vector3 pos = target.transform.position + new Vector3(ox, 0f, oz);
 
-            if (NavMesh.SamplePosition(pos, out NavMeshHit hit, 5f, NavMesh.AllAreas))
-                pos = hit.position;
+            if (target.isInsideFactory)
+            {
+                if (NavMesh.SamplePosition(pos, out NavMeshHit navHit, 5f, NavMesh.AllAreas))
+                    pos = navHit.position;
+            }
+            else
+            {
+                int floorMask = LayerMask.GetMask("Room", "Colliders", "Default", "Terrain", "MapHazards");
+                Vector3 rayStart = pos + Vector3.up * 50f;
+                if (Physics.Raycast(rayStart, Vector3.down, out RaycastHit groundHit, 150f, floorMask, QueryTriggerInteraction.Ignore))
+                    pos = groundHit.point;
+            }
 
             Transform parent = RoundManager.Instance.mapPropsContainer.transform;
             GameObject go = Object.Instantiate(prefab, pos, Quaternion.identity, parent);

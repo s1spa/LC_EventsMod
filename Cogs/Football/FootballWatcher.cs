@@ -29,6 +29,10 @@ namespace LCChaosMod.Cogs.Football
         private readonly Dictionary<ulong, Vector3>         _prevPos   = new();
         private readonly HashSet<GrabbableObject>            _flying    = new();
 
+        private GrabbableObject[] _itemCache = System.Array.Empty<GrabbableObject>();
+        private float _cacheTimer = 0f;
+        private const float CacheInterval = 1f;
+
         public void Setup(float duration) => _timeLeft = duration;
 
         private void Update()
@@ -47,7 +51,13 @@ namespace LCChaosMod.Cogs.Football
             var all = StartOfRound.Instance?.allPlayerScripts;
             if (all == null) return;
 
-            var items = Object.FindObjectsOfType<GrabbableObject>();
+            _cacheTimer -= Time.deltaTime;
+            if (_cacheTimer <= 0f)
+            {
+                _itemCache  = Object.FindObjectsOfType<GrabbableObject>();
+                _cacheTimer = CacheInterval;
+            }
+            var items = _itemCache;
 
             foreach (var player in all)
             {

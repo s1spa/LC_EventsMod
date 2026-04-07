@@ -83,6 +83,7 @@ namespace LCChaosMod.Cogs
             {
                 ai.isOutside = true;
                 ai.allAINodes = GameObject.FindGameObjectsWithTag("OutsideAINode");
+                RoundManager.Instance.SpawnedEnemies.Add(ai);
             }
         }
 

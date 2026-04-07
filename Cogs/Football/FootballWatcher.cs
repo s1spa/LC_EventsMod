@@ -7,7 +7,7 @@ namespace LCChaosMod.Cogs.Football
 {
     /// <summary>
     /// Runs on the host only for the duration of the Football event.
-    /// Kicks items near running players using a smooth parabolic arc.
+    /// Detects kicks and broadcasts them to all clients via Net.
     /// </summary>
     public class FootballWatcher : MonoBehaviour
     {
@@ -15,19 +15,21 @@ namespace LCChaosMod.Cogs.Football
         private const float KickCooldown = 0.8f;
         private const float MinSpeed     = 0.3f;
 
-        // kick physics
-        private const float HSpeed  = 9f;   // horizontal m/s
-        private const float VSpeed  = 4f;   // initial upward m/s
-        private const float Gravity = 18f;  // m/s²
+        // kick physics — shared with KickCoroutineStatic
+        internal const float HSpeed  = 9f;
+        internal const float VSpeed  = 4f;
+        internal const float Gravity = 18f;
 
-        // collision masks (same as used by LC internals)
-        private const int WallMask  = 369101057; // SoccerBallProp wall mask
-        private const int FloorMask = 268437760; // GrabbableObject floor mask
+        // collision masks
+        internal const int WallMask  = 369101057;
+        internal const int FloorMask = 268437760;
+
+        // Items currently mid-flight (static so KickCoroutineStatic can access it)
+        private static readonly HashSet<GrabbableObject> _flying = new();
 
         private float _timeLeft;
         private readonly Dictionary<GrabbableObject, float> _cooldowns = new();
         private readonly Dictionary<ulong, Vector3>         _prevPos   = new();
-        private readonly HashSet<GrabbableObject>            _flying    = new();
 
         private GrabbableObject[] _itemCache = System.Array.Empty<GrabbableObject>();
         private float _cacheTimer = 0f;
@@ -57,7 +59,6 @@ namespace LCChaosMod.Cogs.Football
                 _itemCache  = Object.FindObjectsOfType<GrabbableObject>();
                 _cacheTimer = CacheInterval;
             }
-            var items = _itemCache;
 
             foreach (var player in all)
             {
@@ -72,7 +73,7 @@ namespace LCChaosMod.Cogs.Football
 
                 if (!moving) continue;
 
-                foreach (var item in items)
+                foreach (var item in _itemCache)
                 {
                     if (item == null) continue;
                     if (item.playerHeldBy != null) continue;
@@ -80,25 +81,31 @@ namespace LCChaosMod.Cogs.Football
                     if (_cooldowns.ContainsKey(item)) continue;
                     if (Vector3.Distance(pos, item.transform.position) > KickRadius) continue;
 
-                    StartCoroutine(KickCoroutine(item, player));
+                    // Compute kick direction here so all clients get the same value
+                    Vector3 dir = item.transform.position - player.transform.position;
+                    dir.y = 0f;
+                    if (dir.sqrMagnitude < 0.001f) dir = player.transform.forward;
+                    dir = dir.normalized;
+
+                    Vector3 startPos = item.transform.position;
+
+                    Net.Broadcast(item, dir, startPos);
                     _cooldowns[item] = KickCooldown;
                     Plugin.Log.LogInfo($"[Football] {player.playerUsername} kicked {item.itemProperties?.itemName ?? item.name}.");
                 }
             }
         }
 
-        private IEnumerator KickCoroutine(GrabbableObject item, PlayerControllerB player)
+        /// <summary>
+        /// Physics simulation — runs on ALL clients (and host) via Net.
+        /// Static so it can be called without a FootballWatcher instance on clients.
+        /// </summary>
+        public static IEnumerator KickCoroutineStatic(GrabbableObject item, Vector3 dir, Vector3 startPos)
         {
             _flying.Add(item);
             item.hasHitGround = true; // stop GrabbableObject from running FallWithCurve
 
-            // Horizontal direction away from player
-            Vector3 dir = item.transform.position - player.transform.position;
-            dir.y = 0f;
-            if (dir.sqrMagnitude < 0.001f) dir = player.transform.forward;
-            dir = dir.normalized;
-
-            Vector3 pos = item.transform.position;
+            Vector3 pos = startPos;
             float vy = VSpeed;
             float elapsed = 0f;
 
@@ -112,11 +119,10 @@ namespace LCChaosMod.Cogs.Football
 
                 Vector3 step = (dir * HSpeed + Vector3.up * vy) * dt;
 
-                // Wall / obstacle check — stop item at surface instead of clipping
+                // Wall check
                 if (Physics.Raycast(pos, step.normalized, out RaycastHit wallHit,
                     step.magnitude + 0.08f, WallMask, QueryTriggerInteraction.Ignore))
                 {
-                    // Reflect off wall, kill most of the speed
                     Vector3 flatNormal = wallHit.normal;
                     flatNormal.y = 0f;
                     dir = Vector3.Reflect(dir, flatNormal.normalized);
@@ -132,7 +138,7 @@ namespace LCChaosMod.Cogs.Football
 
                 item.transform.position = pos;
 
-                // Land when falling and close to floor
+                // Floor landing
                 if (vy < 0f)
                 {
                     float checkDist = Mathf.Abs(vy) * dt + 0.15f;
@@ -149,7 +155,6 @@ namespace LCChaosMod.Cogs.Football
                 yield return null;
             }
 
-            // Settle — update GrabbableObject state so it stays put
             if (item != null)
             {
                 item.hasHitGround    = true;

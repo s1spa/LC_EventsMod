@@ -23,7 +23,7 @@ namespace LCChaosMod
             Cogs.PlayerSwap.Net.Init();
             Cogs.FakeMessage.Net.Init();
             Cogs.SizeMatters.Net.Init();
-            Cogs.RagdollParty.Net.Init();
+            Cogs.Football.Net.Init();
 
             Plugin.Log.LogInfo("[ChaosNetworkHandler] All handlers registered.");
         }

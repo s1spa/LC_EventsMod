@@ -34,6 +34,7 @@ namespace LCChaosMod
             _events.Add(new Cogs.PlayerSwapEvent());
             _events.Add(new Cogs.BerserkTurretEvent());
             _events.Add(new Cogs.FootballEvent());
+            _events.Add(new Cogs.FakeMessage.FakeMessageEvent());
             Plugin.Log.LogInfo($"[EventManager] Start() — {_events.Count} events registered.");
 
             if (_events.Count == 0)
@@ -78,8 +79,11 @@ namespace LCChaosMod
                 }
 
                 Plugin.Log.LogInfo($"[EventManager] Chose: {next.GetName()}");
-                ChaosNetworkHandler.BroadcastWarning(next.GetName());
-                yield return new WaitForSeconds(5f);
+                if (next.ShowWarning())
+                {
+                    ChaosNetworkHandler.BroadcastWarning(next.GetName());
+                    yield return new WaitForSeconds(5f);
+                }
 
                 Plugin.Log.LogInfo($"[EventManager] Executing: {next.GetName()}");
                 try { next.Execute(); }

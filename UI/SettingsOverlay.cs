@@ -38,6 +38,7 @@ namespace LCChaosMod.UI
         private float _berserkDuration;
         private bool  _evtFootball;
         private float _footballDuration;
+        private bool  _evtFakeMessage;
 
         private Vector2 _evtScroll;
 
@@ -202,6 +203,9 @@ namespace LCChaosMod.UI
                 GUILayout.Space(4);
                 SliderRow(Loc.Get("ui.football_duration"), ref _footballDuration, 10f, 120f);
             }
+
+            GUILayout.Space(4);
+            DrawEventRow(11, Loc.Get("event.fake_message"), ref _evtFakeMessage);
 
             GUILayout.Space(4);
             GUILayout.EndScrollView();
@@ -436,6 +440,7 @@ namespace LCChaosMod.UI
             _berserkDuration      = ChaosSettings.BerserkDuration.Value;
             _evtFootball          = ChaosSettings.EnableFootball.Value;
             _footballDuration     = ChaosSettings.FootballDuration.Value;
+            _evtFakeMessage       = ChaosSettings.EnableFakeMessage.Value;
             _evtTurrets     = ChaosSettings.EnableTurrets.Value;
             _turretCountMin = ChaosSettings.TurretCountMin.Value;
             _turretCountMax = ChaosSettings.TurretCountMax.Value;
@@ -468,6 +473,7 @@ namespace LCChaosMod.UI
             ChaosSettings.BerserkDuration.Value       = _berserkDuration;
             ChaosSettings.EnableFootball.Value        = _evtFootball;
             ChaosSettings.FootballDuration.Value      = _footballDuration;
+            ChaosSettings.EnableFakeMessage.Value     = _evtFakeMessage;
             ChaosSettings.EnableTurrets.Value  = _evtTurrets;
             ChaosSettings.TurretCountMin.Value = _turretCountMin;
             ChaosSettings.TurretCountMax.Value = _turretCountMax;

@@ -21,6 +21,7 @@ namespace LCChaosMod
             Cogs.InfiniteStamina.Net.Init();
             Cogs.Firefly.Net.Init();
             Cogs.PlayerSwap.Net.Init();
+            Cogs.FakeMessage.Net.Init();
 
             Plugin.Log.LogInfo("[ChaosNetworkHandler] All handlers registered.");
         }

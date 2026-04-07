@@ -14,5 +14,9 @@ namespace LCChaosMod.Cogs
 
         /// <summary>Виконати евент.</summary>
         void Execute();
+
+        /// <summary>Чи показувати HUD-попередження за 5 секунд до евенту.</summary>
+        bool ShowWarning() => true;
     }
 }
+ 

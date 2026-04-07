@@ -29,6 +29,7 @@ namespace LCChaosMod
             Cogs.PlayerSwap.Lang.Init();
             Cogs.BerserkTurret.Lang.Init();
             Cogs.Football.Lang.Init();
+            Cogs.FakeMessage.Lang.Init();
 
             ChaosSettings.Init(Config);
             _harmony.PatchAll();

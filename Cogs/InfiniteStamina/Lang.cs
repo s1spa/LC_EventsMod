@@ -4,8 +4,8 @@ namespace LCChaosMod.Cogs.InfiniteStamina
     {
         public static void Init()
         {
-            Loc.Register("event.infinite_stamina", "Flash mode activate!",    "Режим Флеша активовано!");
-            Loc.Register("ui.stamina_duration",    "Duration (seconds)",   "Тривалість (секунди)");
+            Loc.Register("event.adrenaline",    "Adrenaline rush!",   "Викид адреналіну!");
+            Loc.Register("ui.stamina_duration", "Duration (seconds)", "Тривалість (секунди)");
         }
     }
 }

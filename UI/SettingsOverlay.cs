@@ -34,6 +34,8 @@ namespace LCChaosMod.UI
         private float _staminaDuration;
         private bool  _evtFirefly;
         private bool  _evtPlayerSwap;
+        private bool  _evtBerserkTurret;
+        private float _berserkDuration;
 
         private Vector2 _evtScroll;
 
@@ -172,7 +174,7 @@ namespace LCChaosMod.UI
             GUILayout.Space(4);
             DrawEventRow(5, Loc.Get("event.random_sound"), ref _evtRandomSound);
             GUILayout.Space(4);
-            DrawEventRow(6, Loc.Get("event.infinite_stamina"), ref _evtInfiniteStamina);
+            DrawEventRow(6, Loc.Get("event.adrenaline"), ref _evtInfiniteStamina);
             if (_expandedEvt == 6)
             {
                 GUILayout.Space(4);
@@ -183,6 +185,13 @@ namespace LCChaosMod.UI
             DrawEventRow(7, Loc.Get("event.firefly"), ref _evtFirefly);
             GUILayout.Space(4);
             DrawEventRow(8, Loc.Get("event.player_swap"), ref _evtPlayerSwap);
+            GUILayout.Space(4);
+            DrawEventRow(9, Loc.Get("event.berserk_turret"), ref _evtBerserkTurret);
+            if (_expandedEvt == 9)
+            {
+                GUILayout.Space(4);
+                SliderRow(Loc.Get("ui.berserk_duration"), ref _berserkDuration, 5f, 60f);
+            }
 
             GUILayout.Space(4);
             GUILayout.EndScrollView();
@@ -413,6 +422,8 @@ namespace LCChaosMod.UI
             _staminaDuration      = ChaosSettings.StaminaDuration.Value;
             _evtFirefly           = ChaosSettings.EnableGlowstick.Value;
             _evtPlayerSwap        = ChaosSettings.EnablePlayerSwap.Value;
+            _evtBerserkTurret     = ChaosSettings.EnableBerserkTurret.Value;
+            _berserkDuration      = ChaosSettings.BerserkDuration.Value;
             _evtTurrets     = ChaosSettings.EnableTurrets.Value;
             _turretCountMin = ChaosSettings.TurretCountMin.Value;
             _turretCountMax = ChaosSettings.TurretCountMax.Value;
@@ -441,6 +452,8 @@ namespace LCChaosMod.UI
             ChaosSettings.StaminaDuration.Value       = _staminaDuration;
             ChaosSettings.EnableGlowstick.Value       = _evtFirefly;
             ChaosSettings.EnablePlayerSwap.Value      = _evtPlayerSwap;
+            ChaosSettings.EnableBerserkTurret.Value   = _evtBerserkTurret;
+            ChaosSettings.BerserkDuration.Value       = _berserkDuration;
             ChaosSettings.EnableTurrets.Value  = _evtTurrets;
             ChaosSettings.TurretCountMin.Value = _turretCountMin;
             ChaosSettings.TurretCountMax.Value = _turretCountMax;

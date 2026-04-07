@@ -21,17 +21,18 @@ You can toggle specific events and adjust their intensity in the settings menu.
 
 - [x] **Mine Rain** — Landmines randomly spawn around the player every 1-3 seconds.
 - [x] **Turret Ambush** — 2 to 4 turrets suddenly spawn in your immediate vicinity.
+- [x] **Berserk Turrets** — All active turrets enter berserk mode and fire in all directions for a configurable duration.
 - [x] **Monster Spawn** — A random monster is instantly spawned near the player.
-- [x] **Dungeon Warp** — Teleports the player to a random location within the facility (Indoor only).
-- [x] **Emergency Recall** — Suddenly teleports the player back to the safety of the ship.
-- [ ] **Swap** — Two random players swap positions (Excludes players on the ship).
+- [x] **Dungeon Warp** — Teleports players to a random location within the facility (Indoor only).
+- [x] **Emergency Recall** — Suddenly teleports a random player back to the safety of the ship.
+- [x] **Swap** — Two random players swap positions (Excludes players on the ship).
+- [x] **Random Sound** — A random enemy audio clip plays near a player inside the facility.
+- [x] **Adrenaline Rush** — Players get infinite stamina but can't stop running forward for a configurable duration.
 - [ ] **Fake Loot** — Deceptive items that explode or vanish when you try to pick them up.
 - [ ] **Ghost Hunt** — Fake footsteps, laughter, or visual glitches to trigger paranoia.
-- [x] **Infinite Stamina** — Just Inginite Stamina LoL
 
 Passive mechanics:
-- [x] Firefly — picking up the Apparatus causes the player to glow 
-  with a warm point light, visible to all players until round end
+- [x] **Firefly** — Picking up the Apparatus causes the player to glow with a warm point light, visible to all players until round end.
 
 
 ## 🖥️ Settings Menu

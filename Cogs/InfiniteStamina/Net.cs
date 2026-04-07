@@ -41,13 +41,16 @@ namespace LCChaosMod.Cogs.InfiniteStamina
             var player = GameNetworkManager.Instance?.localPlayerController;
             if (player == null) yield break;
 
-            Plugin.Log.LogInfo($"[InfiniteStamina] Active for {duration}s.");
+            Plugin.Log.LogInfo($"[Adrenaline] Active for {duration}s.");
             while (elapsed < duration)
             {
                 player.sprintMeter = 1f;
+                player.externalForces = player.transform.forward * 8f;
                 elapsed += Time.deltaTime;
                 yield return null;
             }
+
+            player.externalForces = Vector3.zero;
         }
     }
 }

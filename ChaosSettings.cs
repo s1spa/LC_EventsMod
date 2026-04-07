@@ -38,6 +38,8 @@ namespace LCChaosMod
         public static ConfigEntry<bool> EnableRandomSound { get; private set; } = null!;
         public static ConfigEntry<bool>  EnableInfiniteStamina { get; private set; } = null!;
         public static ConfigEntry<float> StaminaDuration       { get; private set; } = null!;
+        public static ConfigEntry<bool>  EnableBerserkTurret   { get; private set; } = null!;
+        public static ConfigEntry<float> BerserkDuration       { get; private set; } = null!;
 
         public static void Init(ConfigFile config)
         {
@@ -69,6 +71,8 @@ namespace LCChaosMod
             EnableRandomSound     = config.Bind("Events", "RandomSound",     true, "Рандомний звук моба поруч");
             EnableInfiniteStamina = config.Bind("Events", "InfiniteStamina",   true,  "Нескінченна витривалість");
             StaminaDuration       = config.Bind("Events", "StaminaDuration",   10f,   "Тривалість нескінченної витривалості (секунди)");
+            EnableBerserkTurret   = config.Bind("Events", "BerserkTurret",     true,  "Турелі збожеволіли");
+            BerserkDuration       = config.Bind("Events", "BerserkDuration",   10f,   "Тривалість берсерку турелі (секунди)");
         }
     }
 }

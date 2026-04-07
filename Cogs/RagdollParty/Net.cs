@@ -15,7 +15,7 @@ namespace LCChaosMod.Cogs.RagdollParty
             NetworkManager.Singleton.CustomMessagingManager
                 .RegisterNamedMessageHandler(MsgTrip, OnReceive);
         }
-
+ 
         public static void Broadcast(ulong targetClientId)
         {
             ApplyTrip(targetClientId);

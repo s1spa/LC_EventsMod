@@ -57,6 +57,7 @@ namespace LCChaosMod.Cogs.Firefly
             light.color     = GlowColor;
             light.range     = Range;
             light.intensity = Intensity;
+            light.shadows   = LightShadows.None;
 
             var marker = go.AddComponent<FireflyLight>();
             _active.Add(marker);

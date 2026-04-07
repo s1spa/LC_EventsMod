@@ -60,6 +60,7 @@ namespace LCChaosMod.Utils
             {
                 player.isInsideFactory    = false;
                 player.isInHangarShipRoom = true;
+                player.isInElevator       = true;
             }
             player.TeleportPlayer(dest);
         }

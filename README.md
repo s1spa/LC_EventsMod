@@ -1,4 +1,4 @@
-# Lethal Company: Chaos Event Mod 🧨
+# Lethal Company: Chaos Event Mod
 
 [![Version](https://img.shields.io/badge/version-1.0.0-4AF626.svg)](https://github.com/s1spa/LC_ChaosEvents)
 

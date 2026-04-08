@@ -4,10 +4,7 @@ using UnityEngine;
 
 namespace LCChaosMod.Cogs.PlayerSwap
 {
-    /// <summary>
-    /// Targeted message: sends a specific client their new position + isInsideFactory state.
-    /// Host sends one message per swapped player.
-    /// </summary>
+
     internal static class Net
     {
         private const string MsgSwap = "LCChaosMod_PlayerSwap";
@@ -18,10 +15,6 @@ namespace LCChaosMod.Cogs.PlayerSwap
                 .RegisterNamedMessageHandler(MsgSwap, OnReceive);
         }
 
-        /// <summary>
-        /// Send teleport to a specific player with explicit isInsideFactory flag.
-        /// If it's the host's own player — apply directly.
-        /// </summary>
         public static void Send(GameNetcodeStuff.PlayerControllerB player, Vector3 dest, bool isInsideFactory)
         {
             if (player.actualClientId == NetworkManager.Singleton.LocalClientId)

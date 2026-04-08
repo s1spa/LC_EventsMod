@@ -3,17 +3,11 @@ using UnityEngine;
 
 namespace LCChaosMod.Cogs.FakeMessage
 {
-    /// <summary>
-    /// Shows a fake company message using LC's native hint panel (blue, TriggerHint).
-    /// Refreshes every 4s so the panel stays visible and the countdown updates.
-    /// </summary>
     public class FakeMessageOverlay : MonoBehaviour
     {
         private const float Duration    = 5f;
         private const float RefreshRate = 5f;
 
-        // (headerEN, bodyEN, headerUA, bodyUA)
-        // Body strings with {0} get the countdown injected; without — static text.
         private static readonly (string hEN, string bEN, string hUA, string bUA)[] Messages =
         {
             (

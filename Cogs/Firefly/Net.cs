@@ -15,17 +15,15 @@ namespace LCChaosMod.Cogs.Firefly
             mgr.RegisterNamedMessageHandler(MsgGlow,   OnReceiveGlow);
         }
 
-        /// <summary>Called on the client that grabbed the apparatus.</summary>
         public static void Broadcast(ulong clientId)
         {
             if (NetworkManager.Singleton.IsServer)
             {
-                // Host grabbed it — add locally and broadcast to all clients
                 BroadcastGlow(clientId);
             }
             else
             {
-                // Client grabbed it — notify server, server will broadcast
+
                 var writer = new FastBufferWriter(8, Allocator.Temp);
                 using (writer)
                 {
@@ -36,16 +34,14 @@ namespace LCChaosMod.Cogs.Firefly
             }
         }
 
-        // Server receives notification from a client
         private static void OnReceiveNotify(ulong _, FastBufferReader reader)
         {
             if (!NetworkManager.Singleton.IsServer) return;
             reader.ReadValueSafe(out ulong clientId);
-            FireflyTracker.AddLightToPlayer(clientId); // host sees it
-            BroadcastGlow(clientId);                   // tell all clients
+            FireflyTracker.AddLightToPlayer(clientId); 
+            BroadcastGlow(clientId);                   
         }
 
-        // Server → all clients
         private static void BroadcastGlow(ulong clientId)
         {
             var writer = new FastBufferWriter(8, Allocator.Temp);
@@ -57,12 +53,11 @@ namespace LCChaosMod.Cogs.Firefly
             }
         }
 
-        // Client receives glow notification from server
         private static void OnReceiveGlow(ulong _, FastBufferReader reader)
         {
-            if (NetworkManager.Singleton.IsServer) return; // host already applied in OnReceiveNotify
+            if (NetworkManager.Singleton.IsServer) return;
             reader.ReadValueSafe(out ulong clientId);
-            if (clientId == NetworkManager.Singleton.LocalClientId) return; // already applied locally
+            if (clientId == NetworkManager.Singleton.LocalClientId) return;
             FireflyTracker.AddLightToPlayer(clientId);
         }
     }

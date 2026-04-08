@@ -3,10 +3,7 @@ using Unity.Netcode;
 
 namespace LCChaosMod
 {
-    /// <summary>
-    /// Orchestrates network handler registration for all modules.
-    /// Only Warning stays here — it's used directly by EventManager, not tied to any single event.
-    /// </summary>
+
     internal static class ChaosNetworkHandler
     {
         private const string MsgWarning = "LCChaosMod_Warning";
@@ -27,8 +24,6 @@ namespace LCChaosMod
 
             Plugin.Log.LogInfo("[ChaosNetworkHandler] All handlers registered.");
         }
-
-        // ── Warning ──────────────────────────────────────────────────────────
 
         public static void BroadcastWarning(string eventName)
         {

@@ -32,7 +32,6 @@ namespace LCChaosMod.Cogs
                 SpawnOutdoor(target);
         }
 
-        // ── Indoor: використовуємо офіційний серверний API ───────────
         private static void SpawnIndoor(PlayerControllerB target)
         {
             var enemies = RoundManager.Instance.currentLevel?.Enemies;
@@ -45,14 +44,12 @@ namespace LCChaosMod.Cogs
             int idx = Random.Range(0, enemies.Count);
             string name = enemies[idx].enemyType.enemyName;
 
-            // Знаходимо AI-node найближчий до гравця всередині
             Vector3 spawnPos = GetNearestInsideNode(target.transform.position);
 
             Plugin.Log.LogInfo($"[MobSpawnEvent] Spawning indoor '{name}' near {target.playerUsername}.");
             RoundManager.Instance.SpawnEnemyOnServer(spawnPos, Random.Range(0f, 360f), idx);
         }
 
-        // ── Outdoor: інстанціюємо prefab напряму ────────────────────
         private static void SpawnOutdoor(PlayerControllerB target)
         {
             var enemies = RoundManager.Instance.currentLevel?.OutsideEnemies;
@@ -87,7 +84,6 @@ namespace LCChaosMod.Cogs
             }
         }
 
-        // ── Найближчий indoor AI-node ────────────────────────────────
         private static Vector3 GetNearestInsideNode(Vector3 origin)
         {
             var nodes = RoundManager.Instance.insideAINodes;

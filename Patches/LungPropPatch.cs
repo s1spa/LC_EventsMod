@@ -3,10 +3,8 @@ using UnityEngine;
 
 namespace LCChaosMod.Patches
 {
-    /// <summary>
-    /// Watches every frame if the local player is holding the Apparatus (LungProp).
-    /// Triggers the Firefly glow once on pickup.
-    /// </summary>
+    //Watches every frame if the local player is holding the Apparatus (LungProp).
+    // Triggers the Firefly glow once on pickup.
     public class LungPropWatcher : MonoBehaviour
     {
         private bool _triggered;

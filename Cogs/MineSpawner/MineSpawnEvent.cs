@@ -59,7 +59,6 @@ namespace LCChaosMod.Cogs
             return null;
         }
 
-        // ── Spawn single mine near a random non-ship player ──────────
         private static void SpawnMine(GameObject prefab)
         {
             PlayerControllerB? target = GetRandomOutdoorPlayer();
@@ -97,7 +96,6 @@ namespace LCChaosMod.Cogs
                 Plugin.Log.LogWarning("[MineSpawnEvent] Mine prefab has no NetworkObject component.");
         }
 
-        // ── Pick a random living player not on ship ──────────────────
         private static PlayerControllerB? GetRandomOutdoorPlayer()
         {
             var all = StartOfRound.Instance?.allPlayerScripts;

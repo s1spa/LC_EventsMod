@@ -26,7 +26,6 @@ namespace LCChaosMod.Cogs
                 return;
             }
 
-            // Pick 2 random distinct players
             int idxA = Random.Range(0, eligible.Count);
             int idxB;
             do { idxB = Random.Range(0, eligible.Count); } while (idxB == idxA);
@@ -34,7 +33,6 @@ namespace LCChaosMod.Cogs
             var playerA = eligible[idxA];
             var playerB = eligible[idxB];
 
-            // Capture state before teleporting
             Vector3 posA      = playerA.transform.position;
             Vector3 posB      = playerB.transform.position;
             bool    insideA   = playerA.isInsideFactory;

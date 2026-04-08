@@ -4,9 +4,6 @@ using UnityEngine;
 
 namespace LCChaosMod.Cogs.Firefly
 {
-    /// <summary>
-    /// Marker component — placed on the light GameObject under the player.
-    /// </summary>
     public class FireflyLight : MonoBehaviour { }
 
     internal static class FireflyTracker
@@ -17,7 +14,6 @@ namespace LCChaosMod.Cogs.Firefly
 
         private static readonly List<FireflyLight> _active = new();
 
-        /// <summary>Called when the local player picks up the Apparatus.</summary>
         public static void OnLocalPlayerGrabbed()
         {
             var local = GameNetworkManager.Instance?.localPlayerController;
@@ -27,7 +23,6 @@ namespace LCChaosMod.Cogs.Firefly
             Net.Broadcast(local.actualClientId);
         }
 
-        /// <summary>Called on all clients when any player receives the glow.</summary>
         public static void AddLightToPlayer(ulong clientId)
         {
             var all = StartOfRound.Instance?.allPlayerScripts;

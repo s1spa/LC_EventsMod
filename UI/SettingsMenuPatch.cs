@@ -7,10 +7,9 @@ using UnityEngine.UI;
 
 namespace LCChaosMod.UI
 {
-    /// <summary>
-    /// Вішає кнопку "Chaos Mod" в головному меню через SceneManager.sceneLoaded.
-    /// Надійніше ніж патчити MenuManager, бо не залежить від назви методу.
-    /// </summary>
+
+    // Вішає кнопку "Chaos Mod" в головному меню через SceneManager.sceneLoaded.
+    // Надійніше ніж патчити MenuManager, бо не залежить від назви методу.
     internal static class MainMenuInjector
     {
         public static void Init()

@@ -6,9 +6,7 @@ using UnityEngine;
 
 namespace LCChaosMod
 {
-    /// <summary>
-    /// Запускається на початку раунду. Кожні N секунд обирає і виконує рандомний евент.
-    /// </summary>
+    // Запускається на початку раунду. Кожні N секунд обирає і виконує рандомний евент.
     public class EventManager : MonoBehaviour
     {
         public static EventManager? Instance { get; private set; }

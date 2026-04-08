@@ -5,26 +5,19 @@ using UnityEngine;
 
 namespace LCChaosMod.Cogs.Football
 {
-    /// <summary>
-    /// Runs on the host only for the duration of the Football event.
-    /// Detects kicks and broadcasts them to all clients via Net.
-    /// </summary>
     public class FootballWatcher : MonoBehaviour
     {
         private const float KickRadius   = 1.5f;
         private const float KickCooldown = 0.8f;
         private const float MinSpeed     = 0.3f;
 
-        // kick physics — shared with KickCoroutineStatic
         internal const float HSpeed  = 9f;
         internal const float VSpeed  = 4f;
         internal const float Gravity = 18f;
 
-        // collision masks
         internal const int WallMask  = 369101057;
         internal const int FloorMask = 268437760;
 
-        // Items currently mid-flight (static so KickCoroutineStatic can access it)
         private static readonly HashSet<GrabbableObject> _flying = new();
 
         private float _timeLeft;
@@ -42,7 +35,6 @@ namespace LCChaosMod.Cogs.Football
             _timeLeft -= Time.deltaTime;
             if (_timeLeft <= 0f) { Destroy(gameObject); return; }
 
-            // Tick cooldowns
             var keys = new List<GrabbableObject>(_cooldowns.Keys);
             foreach (var k in keys)
             {
@@ -81,7 +73,6 @@ namespace LCChaosMod.Cogs.Football
                     if (_cooldowns.ContainsKey(item)) continue;
                     if (Vector3.Distance(pos, item.transform.position) > KickRadius) continue;
 
-                    // Compute kick direction here so all clients get the same value
                     Vector3 dir = item.transform.position - player.transform.position;
                     dir.y = 0f;
                     if (dir.sqrMagnitude < 0.001f) dir = player.transform.forward;

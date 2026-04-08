@@ -2,8 +2,8 @@ namespace LCChaosMod
 {
     internal static class MyPluginInfo
     {
-        public const string PLUGIN_GUID = "s1spa.LCChaosMod";
-        public const string PLUGIN_NAME = "LC Chaos Mod";
-        public const string PLUGIN_VERSION = "0.1.0";
+        public const string PLUGIN_GUID = "s1spa.LCChaosEvents";
+        public const string PLUGIN_NAME = "LC Chaos Events";
+        public const string PLUGIN_VERSION = "1.0.0";
     }
 }

@@ -33,6 +33,7 @@ namespace LCChaosMod
             Cogs.SizeMatters.Lang.Init();
 
             ChaosSettings.Init(Config);
+            Loc.SetLang(ChaosSettings.Language.Value);
             _harmony.PatchAll();
             UI.MainMenuInjector.Init();
             Patches.RoundLifecycle.Init();

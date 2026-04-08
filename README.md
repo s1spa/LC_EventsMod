@@ -1,6 +1,6 @@
 # Lethal Company: Event Mod 🧨
 
-[![Version](https://img.shields.io/badge/version-0.8.0-orange.svg)](https://github.com/s1spa/LC_ChaosMod)
+[![Version](https://img.shields.io/badge/version-1.0.0-4AF626.svg)](https://github.com/s1spa/LC_ChaosEvents)
 
 **Event Mod** is a plugin for Lethal Company that turns a standard quota run into a true test of survival. No more peaceful looting: the game will randomly throw "surprises" at you that directly impact your chances of making it back alive.
 
@@ -49,7 +49,7 @@ A dedicated button in the Main Menu allows you to configure the mod:
 1. Ensure you have [BepInExPack](https://thunderstore.io/c/lethal-company/p/BepInEx/BepInExPack/) installed.
 2. Install [LethalLib](https://thunderstore.io/c/lethal-company/p/Evaisa/LethalLib/).
 3. Download `LC_ChaosEvent.dll` from the Releases section.
-4. Place the file into your `Lethal Company/BepInEx/plugins/LC_ChaoseEvent` folder.
+4. Place the file into your `Lethal Company/BepInEx/plugins/LC_ChaosEvent` folder.
 
 ---
 *Created by [s1spa](https://github.com/s1spa) with chaos in mind.*

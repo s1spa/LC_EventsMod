@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using GameNetcodeStuff;
+using LCChaosMod.Utils;
 using static LCChaosMod.Utils.PlayerUtils;
 using Unity.Netcode;
 using UnityEngine;

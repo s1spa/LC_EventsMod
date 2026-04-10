@@ -107,17 +107,22 @@ namespace LCChaosMod.Cogs.SizeMatters
             if (enforcer != null) Object.Destroy(enforcer.gameObject);
             if (player != null) player.thisPlayerBody.localScale = Vector3.one;
 
-            if (player != null && !player.isPlayerDead && isCurrent)
+            if (player != null && isCurrent)
             {
-                if (cam != null) cam.localPosition = origCamPos;
-                if (cc  != null)
-                {
-                    cc.enabled = false;
-                    player.transform.position += Vector3.up * (origHeight - cc.height);
-                    cc.height = origHeight; cc.radius = origRadius; cc.center = origCenter;
-                    cc.enabled = true;
-                }
+                // швидкість відновлюємо завжди — навіть якщо гравець помер
                 if (isLocal) player.movementSpeed = origSpeed;
+
+                if (!player.isPlayerDead)
+                {
+                    if (cam != null) cam.localPosition = origCamPos;
+                    if (cc  != null)
+                    {
+                        cc.enabled = false;
+                        player.transform.position += Vector3.up * (origHeight - cc.height);
+                        cc.height = origHeight; cc.radius = origRadius; cc.center = origCenter;
+                        cc.enabled = true;
+                    }
+                }
             }
 
             if (isCurrent)

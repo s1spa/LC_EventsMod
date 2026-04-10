@@ -50,11 +50,30 @@ namespace LCChaosMod.Cogs.RandomSound
                 if (clips == null) continue;
                 foreach (var c in clips)
                 {
-                    if (c != null && c.name == clipName)
+                    if (c == null || c.name != clipName) continue;
+
+                    GameObject tmpAudio = new GameObject("ChaosMod_TempAudio");
+                    tmpAudio.transform.position = pos;
+
+                    AudioSource source = tmpAudio.AddComponent<AudioSource>();
+                    source.clip = c;
+
+                    // * diageticMixer — звук поважає налаштування гучності та ефекти простору
+                    var mixer = SoundManager.Instance?.diageticMixer;
+                    if (mixer != null)
                     {
-                        AudioSource.PlayClipAtPoint(c, pos);
-                        return;
+                        var groups = mixer.FindMatchingGroups("Master");
+                        if (groups?.Length > 0) source.outputAudioMixerGroup = groups[0];
                     }
+
+                    source.spatialBlend = 1f;
+                    source.rolloffMode  = AudioRolloffMode.Logarithmic;
+                    source.minDistance  = 1f;
+                    source.maxDistance  = 15f;
+                    source.Play();
+
+                    Object.Destroy(tmpAudio, c.length);
+                    return;
                 }
             }
             Plugin.Log.LogWarning($"[RandomSound] Clip '{clipName}' not found locally.");

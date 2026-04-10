@@ -45,14 +45,25 @@ namespace LCChaosMod.Cogs
             AudioClip clip = pool[Random.Range(0, pool.Count)];
             if (clip == null) return;
 
-            // Грати поруч з рандомним гравцем всередині
-            var target = inside[Random.Range(0, inside.Count)];
-            float ox = Random.Range(-6f, 6f);
-            float oz = Random.Range(-6f, 6f);
-            Vector3 pos = target.transform.position + new Vector3(ox, 1f, oz);
+            // Перемішуємо список і беремо рандомну кількість гравців (від 1 до всіх)
+            for (int i = inside.Count - 1; i > 0; i--)
+            {
+                int j = Random.Range(0, i + 1);
+                (inside[i], inside[j]) = (inside[j], inside[i]);
+            }
+            int maxTargets  = Mathf.Max(1, inside.Count / 2);
+            int targetCount = Random.Range(1, maxTargets + 1);
 
-            Plugin.Log.LogInfo($"[RandomSoundEvent] Playing '{clip.name}' near {target.playerUsername}.");
-            RandomSound.Net.Broadcast(clip.name, pos);
+            for (int i = 0; i < targetCount; i++)
+            {
+                var target = inside[i];
+                float ox = Random.Range(-6f, 6f);
+                float oz = Random.Range(-6f, 6f);
+                Vector3 pos = target.transform.position + new Vector3(ox, 1f, oz);
+
+                Plugin.Log.LogInfo($"[RandomSoundEvent] Playing '{clip.name}' near {target.playerUsername}.");
+                RandomSound.Net.Broadcast(clip.name, pos);
+            }
         }
 
         private static List<PlayerControllerB> GetInsidePlayers()

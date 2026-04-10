@@ -4,6 +4,6 @@ namespace LCChaosMod
     {
         public const string PLUGIN_GUID = "s1spa.LCChaosEvents";
         public const string PLUGIN_NAME = "LC Chaos Events";
-        public const string PLUGIN_VERSION = "1.0.0";
+        public const string PLUGIN_VERSION = "1.1.0";
     }
 }

@@ -309,4 +309,4 @@ namespace LCChaosMod.Cogs.SizeMatters
                 _player.thisPlayerBody.localScale = _scale;
         }
     }
-}
+} 

@@ -10,8 +10,9 @@ namespace LCChaosMod.UI
     [HarmonyPatch(typeof(MenuManager), "Start")]
     internal static class MainMenuInjector
     {
-        [HarmonyPostfix]
-        static void Postfix()
+        // * Finalizer запускається навіть якщо інші патчі (LethalCasino) кинули виняток
+        [HarmonyFinalizer]
+        static void Finalizer(System.Exception? __exception)
         {
             // ! Не дублюємо — якщо кнопка вже є, виходимо
             if (GameObject.Find("ChaosModButton") != null) return;
